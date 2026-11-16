@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poetry Prompt Game</title>
+
+<!-- Google Material Symbols font (Apache License 2.0) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #330f17;
+    --bg-panel: #431521;
+    --ink: #f3e6ea;
+    --ink-soft: #d2a9b8;
+    --emerald: #2f9e7a;
+    --emerald-dark: #227a5f;
+    --amethyst: #c98fb0;
+    --amethyst-dark: #b06f93;
+    --garnet: #e38ca8;
+    --border: #5c2235;
+    --shadow: 0 2px 14px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    background: var(--bg);
+    color: var(--ink);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  header {
+    text-align: center;
+    padding: 2.5rem 1rem 1.5rem;
+  }
+
+  header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-size: 2.6rem;
+    margin: 0;
+    color: var(--amethyst);
+    letter-spacing: 0.02em;
+  }
+
+  header p {
+    color: var(--ink-soft);
+    margin-top: 0.4rem;
+    font-size: 1rem;
+  }
+
+  main {
+    flex: 1;
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 1.25rem 3rem;
+  }
+
+  .panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    padding: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .panel h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    margin-top: 0;
+    color: var(--amethyst);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  button {
+    font-family: 'Jost', sans-serif;
+    font-weight: 400;
+    font-size: 0.95rem;
+    cursor: pointer;
+    border-radius: 999px;
+    border: none;
+    padding: 0.7rem 1.4rem;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+
+  button:active { transform: scale(0.97); }
+
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  a:focus-visible {
+    outline: 2px solid var(--garnet);
+    outline-offset: 2px;
+  }
+
+  .btn-primary {
+    background: var(--emerald);
+    color: #fff;
+  }
+
+  .btn-primary:hover { background: var(--emerald-dark); box-shadow: 0 3px 10px rgba(0,0,0,0.3); }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--amethyst);
+    border: 1px solid var(--amethyst);
+  }
+
+  .btn-secondary:hover { background: #4e1b2a; }
+
+  .placeholder {
+    color: var(--ink-soft);
+    font-style: italic;
+  }
+
+  textarea {
+    width: 100%;
+    min-height: 200px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.15rem;
+    resize: vertical;
+    background: #260b11;
+    color: var(--ink);
+  }
+
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    color: var(--garnet);
+  }
+
+  footer {
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    padding: 1.5rem 1rem 2rem;
+    border-top: 1px solid var(--border);
+  }
+
+  footer a {
+    color: var(--amethyst);
+    text-decoration: none;
+  }
+
+  footer a:hover { text-decoration: underline; }
+
+  footer .credit-line {
+    margin: 0.2rem 0;
+  }
+
+  .prompt-result {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+
+  .prompt-row span.label {
+    display: block;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--garnet);
+    margin-bottom: 0.2rem;
+  }
+
+  .prompt-row .theme-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    color: var(--ink);
+  }
+
+  .poem-type-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    color: var(--ink);
+    margin: 0 0 0.3rem;
+  }
+
+  .poem-type-note {
+    font-size: 0.92rem;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    margin: 0 0 0.3rem;
+  }
+
+  .poem-type-citation {
+    font-size: 0.78rem;
+  }
+
+  .word-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .word-chip {
+    background: #4e1b2a;
+    border: 1px solid var(--border);
+    color: var(--ink);
+    border-radius: 999px;
+    padding: 0.35rem 0.9rem;
+    font-size: 0.95rem;
+  }
+
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .tool-btn {
+    background: #4e1b2a;
+    color: var(--ink);
+    border: 1px solid var(--border);
+    font-size: 0.85rem;
+    padding: 0.45rem 0.9rem;
+  }
+
+  .tool-btn:hover { background: var(--emerald-dark); }
+
+  .icon-palette {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1rem;
+  }
+
+  .icon-btn {
+    background: #4e1b2a;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 1.1rem;
+    padding: 0.35rem 0.6rem;
+    line-height: 1;
+  }
+
+  .icon-btn:hover { background: var(--emerald-dark); }
+
+  .sub-label {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--garnet);
+    margin: 1.2rem 0 0.5rem;
+    display: block;
+  }
+
+  .audio-section select,
+  .audio-section input[type="file"] {
+    font-family: 'Jost', sans-serif;
+    background: #260b11;
+    color: var(--ink);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.5rem;
+    font-size: 0.9rem;
+    width: 100%;
+    margin-bottom: 0.6rem;
+  }
+
+  audio {
+    width: 100%;
+    margin-top: 0.4rem;
+  }
+
+  .mini-note {
+    font-size: 0.75rem;
+    color: var(--ink-soft);
+    margin: 0.3rem 0 0;
+  }
+
+  /* ---- Presentation Mode ---- */
+  .presentation-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at 50% 30%, var(--bg-panel), var(--bg) 75%);
+    z-index: 1000;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1.5rem;
+    overflow-y: auto;
+  }
+
+  .presentation-overlay.active {
+    display: flex;
+  }
+
+  .presentation-bg-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.16;
+    z-index: 0;
+  }
+
+  .presentation-exit {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .presentation-poem {
+    position: relative;
+    z-index: 1;
+    max-width: 680px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.4rem, 3vw, 2.1rem);
+    line-height: 1.7;
+    color: var(--ink);
+    white-space: pre-wrap;
+    text-align: center;
+  }
+
+  .presentation-audio {
+    position: relative;
+    z-index: 2;
+    margin-top: 2rem;
+    width: 100%;
+    max-width: 420px;
+  }
+
+  /* ---- Responsive adjustments ---- */
+  @media (max-width: 480px) {
+    header h1 { font-size: 2.1rem; }
+    header p { font-size: 0.9rem; }
+    main { padding: 0 0.85rem 2rem; }
+    .panel { padding: 1.25rem; }
+    .panel h2 { font-size: 1.2rem; }
+    .toolbar, .icon-palette { gap: 0.4rem; }
+    .tool-btn, .icon-btn { font-size: 0.8rem; padding: 0.4rem 0.7rem; }
+    textarea { font-size: 1.05rem; min-height: 160px; }
+    .presentation-overlay { padding: 2rem 1rem; }
+    .presentation-exit { top: 1rem; right: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Poetry Prompt Game</h1>
+  <p>Generate a prompt, write your poem, make it your own.</p>
+</header>
+
+<main>
+
+  <section class="panel">
+    <h2><span class="material-symbols-outlined">casino</span> Your Prompt</h2>
+    <div class="placeholder" id="promptDisplay">Click "Generate Prompt" to receive a theme, poem type, and words to include.</div>
+    <button class="btn-primary" id="generateBtn" style="margin-top: 1rem;">Generate Prompt</button>
+  </section>
+
+  <section class="panel">
+    <h2><span class="material-symbols-outlined">edit_note</span> Write Your Poem</h2>
+
+    <div class="toolbar">
+      <button type="button" class="tool-btn" data-insert="\n">Line Break</button>
+      <button type="button" class="tool-btn" data-insert="\n\n">Stanza Break</button>
+      <button type="button" class="tool-btn" data-insert="    ">Add Space</button>
+    </div>
+
+    <span class="sub-label">Insert an Icon</span>
+    <div class="icon-palette" id="iconPalette">
+      <button type="button" class="icon-btn" data-icon="🌙" aria-label="Insert moon icon">🌙</button>
+      <button type="button" class="icon-btn" data-icon="🌊" aria-label="Insert wave icon">🌊</button>
+      <button type="button" class="icon-btn" data-icon="🔥" aria-label="Insert fire icon">🔥</button>
+      <button type="button" class="icon-btn" data-icon="🍃" aria-label="Insert leaf icon">🍃</button>
+      <button type="button" class="icon-btn" data-icon="⭐" aria-label="Insert star icon">⭐</button>
+      <button type="button" class="icon-btn" data-icon="🕊️" aria-label="Insert dove icon">🕊️</button>
+      <button type="button" class="icon-btn" data-icon="🌸" aria-label="Insert blossom icon">🌸</button>
+      <button type="button" class="icon-btn" data-icon="⚡" aria-label="Insert lightning icon">⚡</button>
+    </div>
+    <p class="mini-note">Emoji icons are part of the Unicode Standard and render using your device's built-in font. You may also upload your own image below.</p>
+
+    <span class="sub-label">Upload Your Own Image or Icon (optional)</span>
+    <input type="file" id="imageUpload" accept="image/*">
+    <div id="imagePreviewWrap"></div>
+
+    <textarea id="poemText" placeholder="Begin writing here..."></textarea>
+
+    <span class="sub-label">Background Audio (optional)</span>
+    <div class="audio-section">
+      <select id="audioSelect">
+        <option value="">No audio</option>
+        <option value="https://archive.org/download/coffee-shop-sounds-12/Coffee%20Shop%20Sounds%2012.mp3">Coffee Shop Ambience — Community Audio (Internet Archive)</option>
+        <option value="https://archive.org/download/heartbeat-sound-effect/Heartbeat-sound-effect.mp3">Heartbeat — Community Audio (Internet Archive)</option>
+        <option value="https://archive.org/download/SSE_Library_AMBIENCE/TROPICAL/AMBTrop_Jungle%20background%201_CS_USC.mp3">Nature / Jungle Ambience — SSE Library: Ambience (Internet Archive, CC0)</option>
+        <option value="upload">Upload my own audio file...</option>
+      </select>
+      <input type="file" id="audioUpload" accept="audio/*" style="display:none;">
+      <audio id="audioPlayer" controls style="display:none;"></audio>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2><span class="material-symbols-outlined">theaters</span> Presentation Mode</h2>
+    <p class="placeholder">When you're ready, view your finished poem full-screen with your chosen image and audio.</p>
+    <button class="btn-primary" id="presentBtn">Enter Presentation Mode</button>
+  </section>
+
+</main>
+
+<div class="presentation-overlay" id="presentationOverlay">
+  <img class="presentation-bg-image" id="presentationBgImage" alt="">
+  <button class="btn-secondary presentation-exit" id="exitPresentBtn">
+    <span class="material-symbols-outlined">close</span> Exit
+  </button>
+  <div class="presentation-poem" id="presentationPoem"></div>
+  <audio class="presentation-audio" id="presentationAudio" controls autoplay style="display:none;"></audio>
+</div>
+
+<footer>
+  <p class="credit-line">Icons by <a href="https://fonts.google.com/icons" target="_blank" rel="noopener">Google Material Symbols</a>, licensed under the <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank" rel="noopener">Apache License 2.0</a>.</p>
+  <p class="credit-line">Preset ambient audio from the <a href="https://archive.org" target="_blank" rel="noopener">Internet Archive</a>: &ldquo;Coffee Shop Sounds 12&rdquo; (uploaded by Ziya Hwang, <a href="https://archive.org/details/coffee-shop-sounds-12" target="_blank" rel="noopener">Community Audio</a>); &ldquo;Heartbeat Sound Effect&rdquo; (uploaded by Imran408, <a href="https://archive.org/details/heartbeat-sound-effect" target="_blank" rel="noopener">Community Audio</a>); and &ldquo;Jungle Background 1&rdquo; from the <a href="https://archive.org/details/SSE_Library_AMBIENCE" target="_blank" rel="noopener">SSE Library: Ambience</a> collection (USC Cinema / Sunset Editorial, uploaded by Jason Scott), licensed <a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" rel="noopener">CC0 1.0</a>.</p>
+  <p class="credit-line">Icon palette uses standard Unicode emoji characters, rendered by the user's device/browser font.</p>
+  <p class="credit-line">&ldquo;The author would like to acknowledge the use of Claude Sonnet 5, a language model developed by Anthropic, in the preparation of this assignment. The Claude Sonnet 5 was used to create and structure this website.&rdquo;</p>
+</footer>
+
+<script>
+  // ---- Step 2: Prompt generator data ----
+
+  const themes = [
+    "a forgotten letter",
+    "the last snowfall",
+    "a stranger's kindness",
+    "a familiar song heard again",
+    "a locked door",
+    "sunlight through water",
+    "the sound of rain on a roof",
+    "an old photograph",
+    "a goodbye left unsaid",
+    "what the moon forgets",
+    "the smell of a childhood home",
+    "a map with no destination",
+    "the last light before a storm",
+    "a conversation overheard",
+    "the weight of a quiet room",
+    "a season changing without warning",
+    "a hand reaching for another",
+    "the space between two heartbeats",
+    "a garden left untended",
+    "the first and last time"
+  ];
+
+  const poemTypes = [
+    {
+      name: "Sonnet",
+      note: "14 lines, traditionally in iambic pentameter. The Shakespearean form follows an ABAB CDCD EFEF GG rhyme scheme, building to a final rhymed couplet that often delivers a turn or resolution.",
+      citationText: "Academy of American Poets, \"Sonnet\"",
+      citationUrl: "https://poets.org/glossary/sonnet"
+    },
+    {
+      name: "Ghazal",
+      note: "A series of at least five couplets (shers), each independent in meaning but unified by a repeated refrain (radif) and a rhyme (qafia) that appear in both lines of the opening couplet and the second line of every couplet after.",
+      citationText: "Academy of American Poets, \"Ghazal\"",
+      citationUrl: "https://poets.org/glossary/ghazal"
+    },
+    {
+      name: "Haiku",
+      note: "A three-line poem with a 5-7-5 syllable pattern, traditionally rooted in close observation of nature and a moment of sudden awareness.",
+      citationText: "Academy of American Poets, \"Haiku\"",
+      citationUrl: "https://poets.org/glossary/haiku"
+    },
+    {
+      name: "Villanelle",
+      note: "19 lines: five tercets followed by a closing quatrain, built on two repeating refrains and only two rhymes carried through the whole poem.",
+      citationText: "Poetry Foundation, \"Villanelle\"",
+      citationUrl: "https://www.poetryfoundation.org/learn/glossary-terms/villanelle"
+    },
+    {
+      name: "Free Verse",
+      note: "Poetry without a fixed meter or rhyme scheme, where line breaks and white space are shaped by breath, image, and emphasis rather than strict rules.",
+      citationText: "Poetry Foundation, \"Free Verse\"",
+      citationUrl: "https://www.poetryfoundation.org/learn/glossary-terms/free-verse"
+    },
+    {
+      name: "Limerick",
+      note: "A five-line poem with an AABBA rhyme scheme and a bouncy, anapestic rhythm, usually comic or lighthearted in tone.",
+      citationText: "Poetry Foundation, \"Limerick\"",
+      citationUrl: "https://www.poetryfoundation.org/learn/glossary-terms/limerick"
+    }
+  ];
+
+  const wordBank = [
+    // nouns
+    "lantern", "threshold", "tide", "echo", "ash", "wren", "hollow", "glass",
+    "ember", "orbit", "thread", "hush", "bloom", "rust", "harbor", "static",
+    "feather", "salt", "root", "glow", "shadow", "clay", "spine", "whisper",
+    "current", "nest", "spark", "horizon", "ruin", "marrow", "tether", "dusk",
+    // adjectives
+    "weathered", "luminous", "restless", "brittle", "tender", "hollowed",
+    "unspoken", "fleeting", "jagged", "quiet", "molten", "threadbare",
+    "wistful", "sprawling", "unmoored", "faded",
+    // verbs
+    "linger", "unravel", "drift", "collapse", "kindle", "wander", "fracture",
+    "tether", "dissolve", "stitch", "hover", "surrender", "scatter", "unfold",
+    "wither", "ignite"
+  ];
+
+  function pickRandom(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  function pickRandomUnique(arr, count) {
+    const copy = [...arr];
+    const result = [];
+    for (let i = 0; i < count && copy.length > 0; i++) {
+      const idx = Math.floor(Math.random() * copy.length);
+      result.push(copy.splice(idx, 1)[0]);
+    }
+    return result;
+  }
+
+  function generatePrompt() {
+    const theme = pickRandom(themes);
+    const poemType = pickRandom(poemTypes);
+    const words = pickRandomUnique(wordBank, 3);
+
+    const display = document.getElementById('promptDisplay');
+    display.classList.remove('placeholder');
+    display.innerHTML = `
+      <div class="prompt-result">
+        <div class="prompt-row">
+          <span class="label">Theme</span>
+          <span class="theme-text">${theme}</span>
+        </div>
+        <div class="prompt-row">
+          <span class="label">Poem Type</span>
+          <p class="poem-type-name">${poemType.name}</p>
+          <p class="poem-type-note">${poemType.note}</p>
+          <p class="poem-type-citation"><a href="${poemType.citationUrl}" target="_blank" rel="noopener">${poemType.citationText}</a></p>
+        </div>
+        <div class="prompt-row">
+          <span class="label">Words to Include</span>
+          <div class="word-list">
+            ${words.map(w => `<span class="word-chip">${w}</span>`).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  document.getElementById('generateBtn').addEventListener('click', generatePrompt);
+
+  // ---- Step 3: Writing & formatting tools ----
+
+  const poemText = document.getElementById('poemText');
+
+  function insertAtCursor(text) {
+    const start = poemText.selectionStart;
+    const end = poemText.selectionEnd;
+    const before = poemText.value.substring(0, start);
+    const after = poemText.value.substring(end);
+    poemText.value = before + text + after;
+    const cursorPos = start + text.length;
+    poemText.focus();
+    poemText.setSelectionRange(cursorPos, cursorPos);
+  }
+
+  document.querySelectorAll('.tool-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const raw = btn.getAttribute('data-insert');
+      insertAtCursor(raw.replace(/\\n/g, '\n'));
+    });
+  });
+
+  document.querySelectorAll('.icon-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      insertAtCursor(btn.getAttribute('data-icon'));
+    });
+  });
+
+  // Image upload preview (user-provided images are embedded as a visual reference, not inserted as text)
+  document.getElementById('imageUpload').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    const wrap = document.getElementById('imagePreviewWrap');
+    wrap.innerHTML = '';
+    if (file) {
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(file);
+      img.style.maxWidth = '140px';
+      img.style.borderRadius = '10px';
+      img.style.marginBottom = '0.8rem';
+      img.style.border = '1px solid var(--border)';
+      wrap.appendChild(img);
+    }
+  });
+
+  // Audio picker: presets vs. user upload
+  const audioSelect = document.getElementById('audioSelect');
+  const audioUpload = document.getElementById('audioUpload');
+  const audioPlayer = document.getElementById('audioPlayer');
+
+  audioSelect.addEventListener('change', () => {
+    const val = audioSelect.value;
+    if (val === 'upload') {
+      audioUpload.style.display = 'block';
+      audioPlayer.style.display = 'none';
+    } else if (val === '') {
+      audioUpload.style.display = 'none';
+      audioPlayer.style.display = 'none';
+      audioPlayer.src = '';
+    } else {
+      audioUpload.style.display = 'none';
+      audioPlayer.src = val;
+      audioPlayer.style.display = 'block';
+    }
+  });
+
+  audioUpload.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      audioPlayer.src = URL.createObjectURL(file);
+      audioPlayer.style.display = 'block';
+    }
+  });
+
+  // ---- Step 4: Presentation Mode ----
+
+  const presentationOverlay = document.getElementById('presentationOverlay');
+  const presentationPoem = document.getElementById('presentationPoem');
+  const presentationBgImage = document.getElementById('presentationBgImage');
+  const presentationAudio = document.getElementById('presentationAudio');
+  const imageUploadInput = document.getElementById('imageUpload');
+
+  document.getElementById('presentBtn').addEventListener('click', () => {
+    // Poem text
+    const text = poemText.value.trim();
+    presentationPoem.textContent = text || "Your poem will appear here once you start writing.";
+
+    // Background image, if one was uploaded
+    const imgFile = imageUploadInput.files[0];
+    if (imgFile) {
+      presentationBgImage.src = URL.createObjectURL(imgFile);
+      presentationBgImage.style.display = 'block';
+    } else {
+      presentationBgImage.style.display = 'none';
+    }
+
+    // Audio: mirror whatever is currently loaded in the writing panel's player
+    if (audioPlayer.src && audioPlayer.style.display !== 'none') {
+      presentationAudio.src = audioPlayer.src;
+      presentationAudio.style.display = 'block';
+      presentationAudio.currentTime = 0;
+      presentationAudio.play().catch(() => {});
+    } else {
+      presentationAudio.removeAttribute('src');
+      presentationAudio.style.display = 'none';
+    }
+
+    presentationOverlay.classList.add('active');
+  });
+
+  document.getElementById('exitPresentBtn').addEventListener('click', () => {
+    presentationOverlay.classList.remove('active');
+    presentationAudio.pause();
+  });
+</script>
+
+</body>
+</html>
